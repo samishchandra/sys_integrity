@@ -1,0 +1,60 @@
+[root@vl76: hw1]# ./xhw1 3 sample.txt "md5"; dmesg | tail -5;
+syscall returned 3
+t
+[32470.200410] ==========================================
+[32470.200518] Mode flag = 3
+[32470.200594] Successfully copied args3 to kargs
+[32470.200683] filename = sample.txt
+[32470.200809] Good to go with Open!!
+[root@vl76: hw1]# ./xhw1 3 "md5"; dmesg | tail -5;
+Insufficient number of arguments!!
+Usage: ./[exe] [flag] [filename] [algo]
+[32470.200410] ==========================================
+[32470.200518] Mode flag = 3
+[32470.200594] Successfully copied args3 to kargs
+[32470.200683] filename = sample.txt
+[32470.200809] Good to go with Open!!
+[root@vl76: hw1]# ./xhw1 3 sample.txt "sha1"; dmesg | tail -5;
+syscall returned -1 (errno=1)
+Operation not permitted
+[32496.984926] ==========================================
+[32496.985033] Mode flag = 3
+[32496.985109] Successfully copied args3 to kargs
+[32496.985198] filename = sample.txt
+[32496.985301] Integrity check failed
+[root@vl76: hw1]# cat > sample.txt
+This is a statement
+^C
+[root@vl76: hw1]# ./xhw1 3 sample.txt "md5"; dmesg | tail -5;
+syscall returned -1 (errno=1)
+Operation not permitted
+[32525.558058] ==========================================
+[32525.558165] Mode flag = 3
+[32525.558241] Successfully copied args3 to kargs
+[32525.558381] filename = sample.txt
+[32525.558650] Integrity check failed
+[root@vl76: hw1]# ./xhw1 2 sample.txt "password" "md5"; dmesg | tail -5;
+syscall returned 0
+Integrity value: d4c215c4df7e6d3e8d15d3b1d2bf9f
+[32537.776879] Successfully copied args2 to kargs
+[32537.776968] filename = sample.txt
+[32537.777060] ilen = 16
+[32537.777151] xattr already exists, replacing the value
+[32537.777255] xattr already exists for algo, replacing the value
+[root@vl76: hw1]# ./xhw1 3 sample.txt "md5"; dmesg | tail -5;
+syscall returned 3
+T
+[32542.336313] ==========================================
+[32542.336417] Mode flag = 3
+[32542.336505] Successfully copied args3 to kargs
+[32542.336595] filename = sample.txt
+[32542.336851] Good to go with Open!!
+[root@vl76: hw1]# ./xhw1 3 test_new.txt "md5"; dmesg | tail -5;
+syscall returned 3
+
+[32564.656821] Mode flag = 3
+[32564.656907] Successfully copied args3 to kargs
+[32564.656998] filename = test_new.txt
+[32564.657092] get_integrity: cannot open file
+[32564.657180] open_with_integrity: File doesn't exist, creating file
+[root@vl76: hw1]#

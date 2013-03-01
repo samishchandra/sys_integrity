@@ -1,0 +1,36 @@
+[root@vl76: hw1]# ./xhw1 2 sample.txt "password" "md5"
+syscall returned 0
+Integrity value: 15d0d6d8f8cc1c7a6696caad4f1136
+[root@vl76: hw1]# ./xhw1 2 sample.txt "password1" "md5" ; dmesg | tail -5;
+syscall returned -1 (errno=13)
+Permission denied
+[32270.652933] xattr already exists, replacing the value
+[32270.653089] xattr already exists for algo, replacing the value
+[32285.504945] ==========================================
+[32285.505080] Mode flag = 2
+[32285.505390] PASSWD: password1
+[root@vl76: hw1]# ./xhw1 2 sample.txt "password" "sha1" ; dmesg | tail -5;
+syscall returned -1 (errno=22)
+Invalid argument
+[32301.237621] PASSWD: password
+[32301.237710] Successfully copied args2 to kargs
+[32301.237799] filename = sample.txt
+[32301.237879] ilen = 16
+[32301.237991] set_integrity: buf length is too short to store integrity value
+[root@vl76: hw1]# ./xhw1 2 sample.txt "password" "md5" ; dmesg | tail -5;
+syscall returned 0
+Integrity value: 15d0d6d8f8cc1c7a6696caad4f1136
+[32315.620248] Successfully copied args2 to kargs
+[32315.620337] filename = sample.txt
+[32315.620417] ilen = 16
+[32315.620557] xattr already exists, replacing the value
+[32315.620688] xattr already exists for algo, replacing the value
+[root@vl76: hw1]# ./xhw1 2 test.txt "password" "md5" ; dmesg | tail -5;
+syscall returned 0
+Integrity value: faeb9e3e763f6389cf9b3b30fcb8e0e8
+[32406.926950]      [<c122785b>] device_register+0x12/0x15
+[32406.927067]      [<c12278d7>] device_create_vargs+0x79/0x9a
+[32406.927187]      [<c1227919>] device_create+0x21/0x23
+[32406.927302]      [<c1201be8>] vcs_make_sysfs+0x48/0x52
+[32406.927825] kmemleak: Automatic memory scanning thread ended
+[root@vl76: hw1]#

@@ -93,6 +93,24 @@ Mode3 usage: ./[exe] 3 [filename] [algo]
  ------------------
 | High level logic |
  ------------------
+Mode1:
+------
+Returns the existing integrity of the file. It can also return a integrity value computed using specified crypto algo. Returns error if no integrity value is present or the buf len provided is too short or crypto algo is not supported.
+
+Mode2:
+------
+Computes and returns the integrity value for a file using the specified algo. Returns error if the crypto algo is not supported or passwords dont match or buf len is not sufficient to hold the integrity value.
+
+Mode3:
+------
+Returns file descriptor of the file when the stored integrity value matches with the existing integrity value of the file. The integrity value is again computed using the specified crypto algo. Returns error if the crypto algo is not supported or carry and return the same error from filp_open or integrity check is failed.
+
+ ---------------------
+| Sample Output files |
+ ---------------------
+sample_output_mode1.txt - contains the sample output for running the system call in mode1
+sample_output_mode2.txt - contains the sample output for running the system call in mode2
+sample_output_mode3.txt - contains the sample output for running the system call in mode3
 
  ------------
 | Test Cases |

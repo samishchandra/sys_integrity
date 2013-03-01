@@ -1,0 +1,44 @@
+[root@vl76: hw1]# ./xhw1 1 sample.txt "md5"
+syscall returned 0
+Integrity value: 15d0d6d8f8cc1c7a6696caad4f1136
+[root@vl76: hw1]# ./xhw1 1 sample.txt ; dmesg | tail -5
+Insufficient number of arguments!!
+Usage: ./[exe] [flag] [filename] [algo]
+[32026.851845] ==========================================
+[32026.851900] Mode flag = 1
+[32026.851944] Successfully copied args1 to kargs
+[32026.851982] filename = sample.txt
+[32026.852013] ilen = 16
+[root@vl76: hw1]# ./xhw1 1 sample1.txt ; dmesg | tail -5
+Insufficient number of arguments!!
+Usage: ./[exe] [flag] [filename] [algo]
+[32026.851845] ==========================================
+[32026.851900] Mode flag = 1
+[32026.851944] Successfully copied args1 to kargs
+[32026.851982] filename = sample.txt
+[32026.852013] ilen = 16
+[root@vl76: hw1]# ./xhw1 1 sample1.txt "md5"; dmesg | tail -5
+syscall returned -1 (errno=2)
+No such file or directory
+[32058.851338] Mode flag = 1
+[32058.851387] Successfully copied args1 to kargs
+[32058.851426] filename = sample1.txt
+[32058.851455] ilen = 16
+[32058.851499] get_integrity: cannot open file
+[root@vl76: hw1]# ./xhw1 1 sample.txt "sha1"; dmesg | tail -5
+syscall returned -1 (errno=34)
+Numerical result out of range
+[32070.135575] Mode flag = 1
+[32070.135672] Successfully copied args1 to kargs
+[32070.135762] filename = sample.txt
+[32070.135842] ilen = 16
+[32070.135941] get_integrity: not able to fetch existing integrity value
+[root@vl76: hw1]# ./xhw1 1 sample.txt "sha12"; dmesg | tail -5
+syscall returned -1 (errno=22)
+Invalid argument
+[32082.642115] Mode flag = 1
+[32082.642467] Successfully copied args1 to kargs
+[32082.642561] filename = sample.txt
+[32082.642641] ilen = 16
+[32082.854480] find_integrity: crypto algo is not supported
+[root@vl76: hw1]#

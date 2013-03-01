@@ -1,0 +1,1 @@
+cmd_/usr/src/hw1-skolli/hw1/sys_xintegrity.ko := ld -r -m elf_i386 -T /usr/src/hw1-skolli/scripts/module-common.lds   -o /usr/src/hw1-skolli/hw1/sys_xintegrity.ko /usr/src/hw1-skolli/hw1/sys_xintegrity.o /usr/src/hw1-skolli/hw1/sys_xintegrity.mod.o

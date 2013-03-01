@@ -1,0 +1,211 @@
+The source files present in this directory consists of implementation and usage of new system call sys_integrity(). This system call is used to maintain the integrity of the files.
+
+
+ --------------
+| Source files |
+ -------------- 
+
+xhw1.c
+------
+User program which invokes the system call in different modes
+
+sys_integrity_args.h
+--------------------
+This file consists of the structures and #defines which are needed for using the system call. Both user 
+program and system share this header file.
+
+sys_xintegrity.c
+----------------
+This file consists of the actual implementation of system call. The system call is written to serve in
+three modes.
+Mode1 - Returns the existing integrity of the file stored at xattr, if there is one
+Mode2 - Computes and sets the integrity value of the file and stores it in xattr on authentication
+Mode3 - Returns file descriptor if the file integrity is good
+
+The code augumented in EXTRA_CREDIT, handles dynamic crypto algo. User can specify the algo to be used 
+for computing the integrity hash value.
+
+This file also contain static kernel code i.e function pointer and actual xintegrity() system call and is burned into the kernel. The function pointer is exposed out, so that the loadable module can change the address to make it point to the implementation in loadable module. The actual sys_integrity() system call just invokes the function pointed by the function pointer.
+
+kernel.config
+-------------
+I tried to build kernel with minimum configuration. I have used http://www.linuxtopia.org/, http://www.kernel-seeds.org to configure the kernel. Based on the hardware present, I have included the drivers needed for them.
+
+
+ ----------------
+| How to compile |
+ ----------------
+Executing "make clean" in this directory will remove all the intermediate files and output files.
+
+Executing "make" on kernel tree produces sys_integrity.o, sys_integrity.ko, xhw1 and some intermediate 
+files.
+
+install_module is a shell script, contains commands to unload and load the built system call as kernel module.
+
+
+ ------------------
+| Steps to execute |
+ ------------------
+1. Clean any intermediate files
+	make clean
+
+2. Compile the source file
+	make
+
+3. Unload and load the system call as kernel module
+	sh install_modules.sh
+
+4. Execute the user program
+	./xhw1 1 sample.txt
+
+5. Check for logged kernel message
+	dmesg | tail
+
+
+ -----------------------------------------
+| Execute user program in different modes |
+ -----------------------------------------
+User program is made to invoke system call in different modes by passing different arguements on command line.
+
+Mode1 usage: ./[exe] 1 [filename]
+Mode2 usage: ./[exe] 2 [filename] [password]
+Mode3 usage: ./[exe] 3 [filename]
+
+for EXTRA_CREDIT:
+Mode1 usage: ./[exe] 1 [filename] [algo]
+Mode2 usage: ./[exe] 2 [filename] [password] [algo]
+Mode3 usage: ./[exe] 3 [filename] [algo]
+
+
+ ------------------
+| Error codes used |
+ ------------------
+
+	 (ERRNO 1) EPERM        : Operation not permitted when the integrity check failed
+	 (ERRNO 2) ENOENT       : File doesn't exist
+	(ERRNO 12) ENOMEM       : Unable to allocate memory in kernel for a variable
+	(ERRNO 13) EACCES       : Permission denied if the authenticaion fails
+	(ERRNO 14) EFAULT       : Cannot access the user arguments
+	(ERRNO 22) EINVAL       : Invalid values for the arguments given	
+	(ERRNO 36) ENAMETOOLONG : Name field in the arguments is too long
+	(ERRNO 61) ENODATA      : Integrity value doesn't exist for the file	
+
+ ------------------
+| High level logic |
+ ------------------
+
+ ------------
+| Test Cases |
+ ------------
+
+Mode 1:
+------
+1. Basic testing
+	
+	./xhw1 1 sample.txt
+
+2. When there is not integrity value
+
+	./xhw1 1 new_sample.txt
+
+3. Less no of arguments
+
+	./xhw1 1
+
+4. When file doesn't exist or doesn't have read access
+
+	./xhw1 1 newfile.txt
+	./xhw1 1 read_restricted.txt
+
+5. Fetch integrity using short buffer
+
+	Modify xhw1 at line-no:9
+		#define BUFLEN 10
+	./xhw1 1 sample.txt
+
+6. Test with invalid arguments
+	
+	filename = NULL
+	ibuf = NULL
+	ilen = 0
+
+	./xhw1 1 sample.txt
+
+Mode 2:
+------
+1. Basic testing
+	
+	./xhw1 2 sample.txt "password"
+
+2. When integrity value already exists
+
+	./xhw1 2 sample.txt "password"
+
+3. When credentials doesn't match
+
+	./xhw1 2 sample.txt "password1"
+
+3. Set integrity value for files > 4K, 1M
+
+	./xhw1 2 big_sample.txt "password"
+
+4. Less no of arguments
+
+	./xhw1 2 sample.txt
+	./xhw1 2
+
+5. When file doesn't exist or doesn't have read/write access
+
+	./xhw1 2 newfile.txt "password"
+	./xhw1 2 write_restricted.txt "password"
+
+6. Fetch integrity using short buffer
+
+	Modify xhw1 at line-no:9
+		#define BUFLEN 10
+	./xhw1 2 sample.txt "password"
+
+7. Test with invalid arguments
+	
+	filename = NULL
+	ibuf = NULL
+	credbuf = NULL
+	clen = 0
+	ilen = 0
+
+	./xhw1 2 sample.txt "password"
+
+Mode 3:
+------
+1. Basic testing
+	
+	./xhw1 3 sample.txt
+
+2. When there is not integrity value
+
+	./xhw1 3 new_sample.txt
+
+3. When the integrity values doesn't match
+
+	Manually open a file and modify it
+	./xhw1 3 modified_sample.txt
+
+3. Less no of arguments
+
+	./xhw1 3
+
+4. When file doesn't exist or doesn't have read access
+
+	./xhw1 3 newfile.txt
+	./xhw1 3 read_restricted.txt
+
+6. Test with invalid arguments
+	
+	filename = NULL
+	oflag = 0
+	mode = 0
+
+	./xhw1 3 sample.txt
+
+
+
